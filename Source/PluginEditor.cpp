@@ -16,7 +16,7 @@ HelloSamplerAudioProcessorEditor::HelloSamplerAudioProcessorEditor (HelloSampler
     mLoadButton.onClick = [&]() { audioProcessor.loadFile(); };
     addAndMakeVisible(mLoadButton);
     
-    setSize (200, 200);
+    setSize (600, 200);
 }
 
 HelloSamplerAudioProcessorEditor::~HelloSamplerAudioProcessorEditor()
@@ -28,17 +28,50 @@ void HelloSamplerAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
     g.setColour(juce::Colours::white);
-    g.setFont(15.0f);
+
+
+    if (mShouldBePainting)
+    {
+        juce::Path p;
+        mAudioPoints.clear();
+
+        auto waveform = audioProcessor.getWaveForm();
+        auto ratio = waveform.getNumSamples() / getWidth();
+        auto buffer = waveform.getReadPointer(0);
+        
+        // scale audio file to window on X-axis
+        for (int sample = 0; sample < waveform.getNumSamples(); sample+=ratio)
+        {
+            mAudioPoints.push_back(buffer[sample]);
+        }
+        
+        p.startNewSubPath(0, getHeight() / 2);
+        
+        // scale on Y-axis
+        for (int sample = 0; sample < mAudioPoints.size(); ++sample)
+        {
+            auto scaled_point = juce::jmap<float>(mAudioPoints[sample], -1.0f, 1.0f, 200, 0);
+            p.lineTo(sample, scaled_point);
+        }
+        
+        g.strokePath(p, juce::PathStrokeType(2));
+        
+        mShouldBePainting = false;
+    }
+
     
-    if (audioProcessor.getNumSamplerSounds() > 0)
-    {
-        g.fillAll(juce::Colours::red);
-        g.drawText("Sound loaded", getWidth() / 2 - 50, getHeight() / 2 - 10 , 100, 20, juce::Justification::centred);
-    }
-    else
-    {
-        g.drawText("Load a sound", getWidth() / 2 - 50, getHeight() / 2 - 10 , 100, 20, juce::Justification::centred);
-    }
+//
+//    g.setFont(15.0f);
+//
+//    if (audioProcessor.getNumSamplerSounds() > 0)
+//    {
+//        g.fillAll(juce::Colours::red);
+//        g.drawText("Sound loaded", getWidth() / 2 - 50, getHeight() / 2 - 10 , 100, 20, juce::Justification::centred);
+//    }
+//    else
+//    {
+//        g.drawText("Load a sound", getWidth() / 2 - 50, getHeight() / 2 - 10 , 100, 20, juce::Justification::centred);
+//    }
 }
 
 void HelloSamplerAudioProcessorEditor::resized()
@@ -60,6 +93,7 @@ void HelloSamplerAudioProcessorEditor::filesDropped(const juce::StringArray& fil
 {
     for (auto file : files) {
         if (isInterestedInFileDrag(file)) {
+            mShouldBePainting = true;
             audioProcessor.loadFile(file);
         }
     }
