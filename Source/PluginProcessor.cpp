@@ -102,6 +102,7 @@ void HelloSamplerAudioProcessor::changeProgramName (int index, const juce::Strin
 void HelloSamplerAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     mSampler.setCurrentPlaybackSampleRate(sampleRate);
+    updateADSR();
 }
 
 void HelloSamplerAudioProcessor::releaseResources()
@@ -139,8 +140,6 @@ void HelloSamplerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    
-    getADSRValue();
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
@@ -207,9 +206,14 @@ void HelloSamplerAudioProcessor::loadFile(const juce::String& path)
     mSampler.addSound(new juce::SamplerSound("Sample", *mFormatReader, range, 60, 0.1, 0.1, 100));
 }
 
-void HelloSamplerAudioProcessor::getADSRValue()
+void HelloSamplerAudioProcessor::updateADSR()
 {
-    DBG("Attack: " << attack << " Decay: " << decay << " Sustain: " << sustain << " Release: " << release );
+    for(int i = 0; i < mSampler.getNumSounds(); ++i)
+    {
+        if (auto sound = dynamic_cast<juce::SamplerSound*>(mSampler.getSound(i).get())) {
+            sound->setEnvelopeParameters(mADSRParams);
+        }
+    }
 }
 
 //==============================================================================

@@ -59,17 +59,16 @@ public:
     int getNumSamplerSounds() { return mSampler.getNumSounds(); }
     juce::AudioBuffer<float>& getWaveForm() { return mWaveForm; }
     
-    void getADSRValue();
+    void updateADSR();
     
-    float attack { 0.0 };
-    float decay { 0.0 };
-    float sustain { 0.0 };
-    float release { 0.0 };
+    juce::ADSR::Parameters& getADSRParams() { return mADSRParams; }
     
 private:
     juce::Synthesiser mSampler;
     const int mNumVoices { 3 };
     juce::AudioBuffer<float> mWaveForm;
+    
+    juce::ADSR::Parameters mADSRParams;
     
     juce::AudioFormatManager mFormatManager;
     juce::AudioFormatReader* mFormatReader { nullptr };
