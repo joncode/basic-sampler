@@ -19,7 +19,7 @@ HelloSamplerAudioProcessor::HelloSamplerAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), mAPVTS(*this, nullptr, "PARAMETERS", createParameters())
 #endif
 {
     mFormatManager.registerBasicFormats();
@@ -208,12 +208,29 @@ void HelloSamplerAudioProcessor::loadFile(const juce::String& path)
 
 void HelloSamplerAudioProcessor::updateADSR()
 {
+    mADSRParams.attack = mAPVTS.getRawParameterValue ("ATTACK")->load();
+    mADSRParams.decay = mAPVTS.getRawParameterValue ("DECAY")->load();
+    mADSRParams.sustain = mAPVTS.getRawParameterValue ("SUSTAIN")->load();
+    mADSRParams.release = mAPVTS.getRawParameterValue ("RELEASE")->load();
+    
     for(int i = 0; i < mSampler.getNumSounds(); ++i)
     {
         if (auto sound = dynamic_cast<juce::SamplerSound*>(mSampler.getSound(i).get())) {
             sound->setEnvelopeParameters(mADSRParams);
         }
     }
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout HelloSamplerAudioProcessor::createParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+    
+    parameters.push_back (std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", 0.0f, 5.0f, 0.0f));
+    parameters.push_back (std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", 0.0f, 3.0f, 2.0f));
+    parameters.push_back (std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", 0.0f, 1.0f, 1.0f));
+    parameters.push_back (std::make_unique<juce::AudioParameterFloat>("RELEASE", "Release", 0.0f, 5.0f, 2.0f));
+    
+    return  { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
