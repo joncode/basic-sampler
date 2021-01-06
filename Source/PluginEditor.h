@@ -10,12 +10,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "WaveThumbnail.h"
 
 //==============================================================================
 /**
 */
-class HelloSamplerAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                            public juce::FileDragAndDropTarget
+class HelloSamplerAudioProcessorEditor  : public juce::AudioProcessorEditor
+                                           
 
 
 {
@@ -26,15 +27,12 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-
-    bool isInterestedInFileDrag (const juce::StringArray& files) override;
-    void filesDropped (const juce::StringArray& files, int x, int y) override;
     
     
 private:
     juce::TextButton mLoadButton { "Load" };
-    std::vector<float> mAudioPoints;
-    bool mShouldBePainting { false };
+    
+    WaveThumbnail mWaveThumbnail;
     
     juce::Slider mAttackSlider, mDecaySlider, mSustainSlider, mReleaseSlider;
     juce::Label mAttackLabel, mDecayLabel, mSustainLabel, mReleaseLabel;

@@ -23,6 +23,7 @@ HelloSamplerAudioProcessor::HelloSamplerAudioProcessor()
 #endif
 {
     mFormatManager.registerBasicFormats();
+    mAPVTS.state.addListener(this);
     
     for (int i = 0; i < mNumVoices; i++)
     {
@@ -144,6 +145,11 @@ void HelloSamplerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    if (mShouldUpdate)
+    {
+        updateADSR();
+    }
+    
     mSampler.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
@@ -187,6 +193,7 @@ void HelloSamplerAudioProcessor::loadFile()
     range.setRange(0, 128, true);
     
     mSampler.addSound(new juce::SamplerSound("Sample", *mFormatReader, range, 60, 0.1, 0.1, 100));
+    updateADSR();
 }
 
 void HelloSamplerAudioProcessor::loadFile(const juce::String& path)
@@ -204,6 +211,8 @@ void HelloSamplerAudioProcessor::loadFile(const juce::String& path)
     range.setRange(0, 128, true);
     
     mSampler.addSound(new juce::SamplerSound("Sample", *mFormatReader, range, 60, 0.1, 0.1, 100));
+    
+    updateADSR();
 }
 
 void HelloSamplerAudioProcessor::updateADSR()
@@ -232,6 +241,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout HelloSamplerAudioProcessor::
     
     return  { parameters.begin(), parameters.end() };
 }
+
+void HelloSamplerAudioProcessor::valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property)
+{
+    mShouldUpdate = true;
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..
