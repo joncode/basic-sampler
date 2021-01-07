@@ -16,8 +16,8 @@
 //==============================================================================
 /**
 */
-class HelloSamplerAudioProcessorEditor  : public juce::AudioProcessorEditor
-                                           
+class HelloSamplerAudioProcessorEditor  : public juce::AudioProcessorEditor,
+                                          public juce::Timer
 
 
 {
@@ -29,6 +29,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     
+    void timerCallback() override;
     
 private:
     juce::TextButton mLoadButton { "Load" };

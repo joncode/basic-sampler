@@ -15,11 +15,15 @@ HelloSamplerAudioProcessorEditor::HelloSamplerAudioProcessorEditor (HelloSampler
 {
     addAndMakeVisible (mWaveThumbnail);
     addAndMakeVisible (mADSR);
+    
+    startTimerHz(30);
+    
     setSize (600, 400);
 }
 
 HelloSamplerAudioProcessorEditor::~HelloSamplerAudioProcessorEditor()
 {
+    stopTimer();
 }
 
 //==============================================================================
@@ -35,4 +39,8 @@ void HelloSamplerAudioProcessorEditor::resized()
     
 }
 
+void HelloSamplerAudioProcessorEditor::timerCallback()
+{
+    repaint();
+}
 
