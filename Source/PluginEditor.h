@@ -32,10 +32,9 @@ public:
     void timerCallback() override;
     
 private:
-    juce::TextButton mLoadButton { "Load" };
-    
     WaveThumbnail mWaveThumbnail;
     ADSRComponent mADSR;
+    juce::ImageComponent mImageComponent;
     
     HelloSamplerAudioProcessor& audioProcessor;
 
