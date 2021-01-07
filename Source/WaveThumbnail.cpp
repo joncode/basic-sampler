@@ -27,12 +27,14 @@ void WaveThumbnail::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::cadetblue.darker());
     
-    if (mShouldBePainting)
+    auto waveform = audioProcessor.getWaveForm();
+    
+    if (waveform.getNumSamples() > 0)
     {
-        juce::Path p;
+        juce::Path pa;
         mAudioPoints.clear();
 
-        auto waveform = audioProcessor.getWaveForm();
+        
         auto ratio = waveform.getNumSamples() / getWidth();
         auto buffer = waveform.getReadPointer(0);
         
@@ -42,18 +44,28 @@ void WaveThumbnail::paint (juce::Graphics& g)
             mAudioPoints.push_back(buffer[sample]);
         }
         
-        p.startNewSubPath(0, getHeight() / 2);
+        g.setColour (juce::Colours::yellow);
+        pa.startNewSubPath(0, getHeight() / 2);
         
         // scale on Y-axis
         for (int sample = 0; sample < mAudioPoints.size(); ++sample)
         {
-            auto scaled_point = juce::jmap<float>(mAudioPoints[sample], -1.0f, 1.0f, 200, 0);
-            p.lineTo(sample, scaled_point);
+            auto scaled_point = juce::jmap<float>(mAudioPoints[sample], -1.0f, 1.0f, getHeight(), 0);
+            pa.lineTo(sample, scaled_point);
         }
         
-        g.strokePath(p, juce::PathStrokeType(2));
+        g.strokePath(pa, juce::PathStrokeType(2));
         
-        mShouldBePainting = false;
+        g.setColour(juce::Colours::white);
+        g.setFont (15.0f);
+        auto textBounds = getLocalBounds().reduced(10, 10);
+        g.drawFittedText(mFileName, textBounds, juce::Justification::topRight, 1);
+        
+    } else
+    {
+        g.setColour(juce::Colours::white);
+        g.setFont (40.0f);
+        g.drawFittedText("Drop an Audio File to load", getLocalBounds(), juce::Justification::centred, 1);
     }
 
 
@@ -79,8 +91,11 @@ bool WaveThumbnail::isInterestedInFileDrag(const juce::StringArray& files)
 void WaveThumbnail::filesDropped(const juce::StringArray& files, int x, int y)
 {
     for (auto file : files) {
-        if (isInterestedInFileDrag(file)) {
-            mShouldBePainting = true;
+        if (isInterestedInFileDrag(file))
+        {
+            auto myFile = std::make_unique<juce::File> (file);
+            mFileName = myFile->getFileNameWithoutExtension();
+            
             audioProcessor.loadFile(file);
         }
     }

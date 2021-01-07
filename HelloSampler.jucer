@@ -16,6 +16,9 @@
       <FILE id="sPJVKl" name="WaveThumbnail.cpp" compile="1" resource="0"
             file="Source/WaveThumbnail.cpp"/>
       <FILE id="gfduGh" name="WaveThumbnail.h" compile="0" resource="0" file="Source/WaveThumbnail.h"/>
+      <FILE id="NmXAZc" name="ADSRComponent.cpp" compile="1" resource="0"
+            file="Source/ADSRComponent.cpp"/>
+      <FILE id="HalF2F" name="ADSRComponent.h" compile="0" resource="0" file="Source/ADSRComponent.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

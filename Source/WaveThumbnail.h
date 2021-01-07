@@ -20,7 +20,7 @@ class WaveThumbnail  :  public juce::Component,
                         public juce::FileDragAndDropTarget
 {
 public:
-    WaveThumbnail (HelloSamplerAudioProcessor&);
+    WaveThumbnail (HelloSamplerAudioProcessor& p);
     ~WaveThumbnail() override;
 
     void paint (juce::Graphics&) override;
@@ -32,6 +32,8 @@ public:
 private:
     std::vector<float> mAudioPoints;
     bool mShouldBePainting { false };
+    
+    juce::String mFileName { "" };
     
     HelloSamplerAudioProcessor& audioProcessor;
     

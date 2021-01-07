@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "WaveThumbnail.h"
+#include "ADSRComponent.h"
 
 //==============================================================================
 /**
@@ -33,14 +34,7 @@ private:
     juce::TextButton mLoadButton { "Load" };
     
     WaveThumbnail mWaveThumbnail;
-    
-    juce::Slider mAttackSlider, mDecaySlider, mSustainSlider, mReleaseSlider;
-    juce::Label mAttackLabel, mDecayLabel, mSustainLabel, mReleaseLabel;
-    
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mAttackAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mDecayAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mSustainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mReleaseAttachment;
+    ADSRComponent mADSR;
     
     HelloSamplerAudioProcessor& audioProcessor;
 
